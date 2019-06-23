@@ -181,6 +181,25 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+type WhileStatement struct {
+	Token     token.Token // 'while' token
+	Condition Expression
+	Body      *BlockStatement
+}
+
+func (we *WhileStatement) statementNode()       {}
+func (we *WhileStatement) TokenLiteral() string { return we.Token.Literal }
+func (we *WhileStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("while")
+	out.WriteString(we.Condition.String())
+	out.WriteString(" ")
+	out.WriteString(we.Body.String())
+
+	return out.String()
+}
+
 type BlockStatement struct {
 	Token      token.Token // '{' token
 	Statements []Statement

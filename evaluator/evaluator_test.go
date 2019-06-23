@@ -168,6 +168,28 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestWhileStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{"x = 0; while (x < 10) { x = x + 1; }", nil},
+		{"x = 0; while (x < 10) { return 20; }", 20},
+		{"x = 0; while (x < 10) { y = 0; while (y < 10) { y = y + 1; } return y; }", 10},
+		{"x = 0; while (x > 10) { return 20; }; return 10", 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
 		input    string

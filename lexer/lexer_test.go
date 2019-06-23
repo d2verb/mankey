@@ -37,6 +37,8 @@ if (5 < 10) {
 
 11 // This is also ok
 12
+
+while (i < 10) {}
 `
 
 	tests := []struct {
@@ -128,6 +130,14 @@ if (5 < 10) {
 		{token.INT, "10"},
 		{token.INT, "11"},
 		{token.INT, "12"},
+		{token.WHILE, "while"},
+		{token.LPAREN, "("},
+		{token.IDENT, "i"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 

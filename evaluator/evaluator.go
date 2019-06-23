@@ -69,6 +69,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+	case *ast.WhileStatement:
+		return evalWhileStatement(node, env)
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue, env)
 		if isError(val) {
@@ -329,6 +331,27 @@ func evalMinusPrefixExpression(right object.Object) object.Object {
 
 	value := right.(*object.Integer).Value
 	return &object.Integer{Value: -value}
+}
+
+func evalWhileStatement(we *ast.WhileStatement, env *object.Environment) object.Object {
+	for {
+		condition := Eval(we.Condition, env)
+		if isError(condition) {
+			return condition
+		}
+
+		if isTruthy(condition) {
+			result := Eval(we.Body, env)
+			rt := result.Type()
+			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+				return result
+			}
+		} else {
+			break
+		}
+	}
+
+	return NULL
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {

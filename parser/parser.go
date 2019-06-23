@@ -138,9 +138,37 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.WHILE:
+		return p.parseWhileStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
+}
+
+func (p *Parser) parseWhileStatement() *ast.WhileStatement {
+	stmt := &ast.WhileStatement{Token: p.curToken}
+
+	// expect '('
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	stmt.Condition = p.parseExpression(LOWEST)
+
+	// expect ')'
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	// expect '{'
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	stmt.Body = p.parseBlockStatement()
+
+	return stmt
 }
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {

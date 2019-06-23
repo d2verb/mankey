@@ -555,6 +555,55 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{},
 	return true
 }
 
+func TestWhileStatement(t *testing.T) {
+	input := `while (x < 10) { x = 10 }`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain %d statements. got=%d",
+			1, len(program.Statements))
+	}
+
+	whileStmt, ok := program.Statements[0].(*ast.WhileStatement)
+	if !ok {
+		t.Fatalf("stmt not *ast.whileStatement. got=%T", program.Statements[0])
+	}
+
+	condition, ok := whileStmt.Condition.(*ast.InfixExpression)
+	if !ok {
+		t.Fatalf("condition not *ast.InfixExpression. got=%T", whileStmt.Condition)
+	}
+
+	if !testInfixExpression(t, condition, "x", "<", 10) {
+		return
+	}
+
+	stmts := whileStmt.Body.Statements
+	if len(stmts) != 1 {
+		t.Fatalf("whileStmt.Body.Statements does not contain %d statements. got=%d",
+			1, len(stmts))
+	}
+
+	expStmt, ok := stmts[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("stmts[0] is not ast.ExpressionStatement. got=%T",
+			stmts[0])
+	}
+
+	infix, ok := expStmt.Expression.(*ast.InfixExpression)
+	if !ok {
+		t.Fatalf("expStmt not *ast.InfixExpression. got=%T", expStmt.Expression)
+	}
+
+	if !testInfixExpression(t, infix, "x", "=", 10) {
+		return
+	}
+}
+
 func TestIfExpression(t *testing.T) {
 	input := `if (x < y) { x }`
 
