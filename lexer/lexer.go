@@ -37,6 +37,8 @@ func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
 	l.skipWhitespace()
+	l.skipComment()
+	l.skipWhitespace()
 
 	switch l.ch {
 	case '=':
@@ -113,6 +115,15 @@ func (l *Lexer) NextToken() token.Token {
 
 func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
+}
+
+func (l *Lexer) skipComment() {
+	if l.ch == '/' && l.peekChar() == '/' {
+		for l.ch != '\n' {
+			l.readChar()
+		}
 		l.readChar()
 	}
 }

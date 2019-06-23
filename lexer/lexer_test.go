@@ -31,6 +31,12 @@ if (5 < 10) {
 "foo bar"
 [1, 2];
 {"foo": 1}
+
+// Comment Line. We need ignore this line
+10
+
+11 // This is also ok
+12
 `
 
 	tests := []struct {
@@ -123,6 +129,9 @@ if (5 < 10) {
 		{token.COLON, ":"},
 		{token.INT, "1"},
 		{token.RBRACE, "}"},
+		{token.INT, "10"},
+		{token.INT, "11"},
+		{token.INT, "12"},
 		{token.EOF, ""},
 	}
 
