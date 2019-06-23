@@ -8,18 +8,20 @@ import (
 	"github.com/d2verb/monkey/lexer"
 )
 
-func TestLetStatements(t *testing.T) {
+func TestAssignExpressions(t *testing.T) {
 	tests := []struct {
-		input              string
-		expectedIdentifier string
-		expectedValue      interface{}
+		input    string
+		expected string
 	}{
-		{"let x = 5;", "x", 5},
-		{"let y = true;", "y", true},
-		{"let foobar = y;", "foobar", "y"},
-		{"let x = 5", "x", 5},
-		{"let y = true", "y", true},
-		{"let foobar = y", "foobar", "y"},
+		{"x = 5;", "(x = 5)"},
+		{"y = true;", "(y = true)"},
+		{"foobar = y;", "(foobar = y)"},
+		{"x = 5", "(x = 5)"},
+		{"y = true", "(y = true)"},
+		{"foobar = y", "(foobar = y)"},
+		{"[1, 2, 3][1] = 4", "(([1, 2, 3][1]) = 4)"},
+		{`{"age": 1}["age"] = 20`, `(({age:1}[age]) = 20)`},
+		{`a["test"] = 20`, `((a[test]) = 20)`},
 	}
 
 	for _, tt := range tests {
@@ -34,14 +36,9 @@ func TestLetStatements(t *testing.T) {
 				len(program.Statements))
 		}
 
-		stmt := program.Statements[0]
-		if !testLetStatement(t, stmt, tt.expectedIdentifier) {
-			return
-		}
-
-		val := stmt.(*ast.LetStatement).Value
-		if !testLiteralExpression(t, val, tt.expectedValue) {
-			return
+		actual := program.String()
+		if actual != tt.expected {
+			t.Errorf("expected=%q, got=%q", tt.expected, actual)
 		}
 	}
 }
@@ -270,6 +267,8 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"true == true", true, "==", true},
 		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
+		{"x = 2", "x", "=", 2},
+		{"x = 15", "x", "=", 15},
 	}
 
 	for _, tt := range infixTests {
@@ -550,31 +549,6 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{},
 	}
 
 	if !testLiteralExpression(t, opExp.Right, right) {
-		return false
-	}
-
-	return true
-}
-
-func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
-	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
-		return false
-	}
-
-	letStmt, ok := s.(*ast.LetStatement)
-	if !ok {
-		t.Errorf("s not *ast.LetStatement. got=%T", s)
-		return false
-	}
-
-	if letStmt.Name.Value != name {
-		t.Errorf("letStmt.Name.Value not '%s'. got=%s", name, letStmt.Name.Value)
-		return false
-	}
-
-	if letStmt.Name.TokenLiteral() != name {
-		t.Errorf("letStmt.Name.TokenLiteral() not '%s'. got=%s", name, letStmt.Name.TokenLiteral())
 		return false
 	}
 

@@ -53,6 +53,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return evalPrefixExpression(node.Operator, right)
 	case *ast.InfixExpression:
+		if node.Operator == "=" {
+			return evalAssignExpression(node.Left, node.Right, env)
+		}
 		left := Eval(node.Left, env)
 		if isError(left) {
 			return left
@@ -72,12 +75,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 		return &object.ReturnValue{Value: val}
-	case *ast.LetStatement:
-		val := Eval(node.Value, env)
-		if isError(val) {
-			return val
-		}
-		env.Set(node.Name.Value, val)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.FunctionLiteral:
@@ -153,6 +150,97 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	default:
 		return newError("unknown operator: %s%s", operator, right.Type())
 	}
+}
+
+func evalAssignExpression(
+	leftNode, rightNode ast.Node,
+	env *object.Environment,
+) object.Object {
+	switch leftNode := leftNode.(type) {
+	case *ast.Identifier:
+		right := Eval(rightNode, env)
+		if isError(right) {
+			return right
+		}
+		env.Set(leftNode.Value, right)
+		return NULL
+	case *ast.IndexExpression:
+		return evalAssignIndexExpression(leftNode.Left, leftNode.Index, rightNode, env)
+	default:
+		return NULL
+	}
+}
+
+func evalAssignIndexExpression(
+	leftNode, indexNode, rightNode ast.Node,
+	env *object.Environment,
+) object.Object {
+	switch leftNode := leftNode.(type) {
+	case *ast.Identifier:
+		index := Eval(indexNode, env)
+		if isError(index) {
+			return index
+		}
+
+		container, ok := env.Get(leftNode.Value)
+		if !ok {
+			return newError("identifier not found: " + leftNode.Value)
+		}
+
+		switch container := container.(type) {
+		case *object.Array:
+			return evalAssignArrayExpression(container, index, rightNode, env)
+		case *object.Hash:
+			return evalAssignHashExpression(container, index, rightNode, env)
+		default:
+			return newError("index operator not supported: %s", container.Type())
+		}
+	default:
+		return newError("can not assign to temporary value")
+	}
+}
+
+func evalAssignArrayExpression(
+	array *object.Array,
+	index object.Object,
+	rightNode ast.Node,
+	env *object.Environment,
+) object.Object {
+	idx, ok := index.(*object.Integer)
+	if !ok {
+		return newError("type mismatch: index of %s should be %s", object.ARRAY_OBJ, object.INTEGER_OBJ)
+	}
+	idxVal := int(idx.Value)
+	length := len(array.Elements)
+	if idxVal < 0 || idxVal >= length {
+		return newError("out of bounds: maximum length is %d. but index is %d", length, idxVal)
+	}
+	right := Eval(rightNode, env)
+	if isError(right) {
+		return right
+	}
+	array.Elements[idxVal] = right
+	return NULL
+}
+
+func evalAssignHashExpression(
+	hashObj *object.Hash,
+	index object.Object,
+	rightNode ast.Node,
+	env *object.Environment,
+) object.Object {
+	right := Eval(rightNode, env)
+	if isError(right) {
+		return right
+	}
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return newError("unusable as hash key: %s", index.Type())
+	}
+
+	hashed := key.HashKey()
+	hashObj.Pairs[hashed] = object.HashPair{Key: index, Value: right}
+	return NULL
 }
 
 func evalInfixExpression(
