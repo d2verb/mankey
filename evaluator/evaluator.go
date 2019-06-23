@@ -177,28 +177,23 @@ func evalAssignIndexExpression(
 	leftNode, indexNode, rightNode ast.Node,
 	env *object.Environment,
 ) object.Object {
-	switch leftNode := leftNode.(type) {
-	case *ast.Identifier:
-		index := Eval(indexNode, env)
-		if isError(index) {
-			return index
-		}
+	left := Eval(leftNode, env)
+	if isError(left) {
+		return left
+	}
 
-		container, ok := env.Get(leftNode.Value)
-		if !ok {
-			return newError("identifier not found: " + leftNode.Value)
-		}
+	index := Eval(indexNode, env)
+	if isError(index) {
+		return index
+	}
 
-		switch container := container.(type) {
-		case *object.Array:
-			return evalAssignArrayExpression(container, index, rightNode, env)
-		case *object.Hash:
-			return evalAssignHashExpression(container, index, rightNode, env)
-		default:
-			return newError("index operator not supported: %s", container.Type())
-		}
+	switch obj := left.(type) {
+	case *object.Array:
+		return evalAssignArrayExpression(obj, index, rightNode, env)
+	case *object.Hash:
+		return evalAssignHashExpression(obj, index, rightNode, env)
 	default:
-		return newError("can not assign to temporary value")
+		return newError("index operator not supported: %s", obj.Type())
 	}
 }
 

@@ -23,6 +23,8 @@ func TestAssignExpression(t *testing.T) {
 		{`x = {"age": 21}; x["age"] = 20`, nil},
 		{`x = {"age": 21}; x["age"] = 20; x["age"]`, 20},
 		{`x = {"age": 21}; x["age"] = [1, 2, 3]; x["age"][0]`, 1},
+		{`x = {"age": 21}; x.age = [1, 2, 3]; x.age[0]`, 1},
+		{`x = {"age": 20}; x.age = [1, 2, 3]; x.age[0] = {"cnt": 1}; x.age[0].cnt`, 1},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)

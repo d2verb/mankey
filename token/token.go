@@ -31,6 +31,7 @@ const (
 	NOT_EQ = "!="
 
 	// Demilitors
+	DOT       = "."
 	COMMA     = ","
 	SEMICOLON = ";"
 

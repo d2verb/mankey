@@ -39,6 +39,7 @@ if (5 < 10) {
 12
 
 while (i < 10) {}
+a.b
 `
 
 	tests := []struct {
@@ -138,6 +139,9 @@ while (i < 10) {}
 		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
 		{token.RBRACE, "}"},
+		{token.IDENT, "a"},
+		{token.DOT, "."},
+		{token.IDENT, "b"},
 		{token.EOF, ""},
 	}
 

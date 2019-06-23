@@ -20,6 +20,7 @@ const (
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
 	INDEX       // array[index]
+	DOT         // hash.member
 )
 
 var precedences = map[token.TokenType]int{
@@ -34,6 +35,7 @@ var precedences = map[token.TokenType]int{
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
 	token.LBRACKET: INDEX,
+	token.DOT:      DOT,
 }
 
 type (
@@ -84,6 +86,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.DOT, p.parseIndexExpressionSugar)
 
 	p.nextToken()
 	p.nextToken()
@@ -471,6 +474,21 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 		return nil
 	}
 
+	return exp
+}
+
+func (p *Parser) parseIndexExpressionSugar(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+
+	p.nextToken() // skip '.'
+
+	if p.curToken.Type != token.IDENT {
+		msg := fmt.Sprintf("only identifier is allowed on the right side of '.', got=%T", exp.Index)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	exp.Index = &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 	return exp
 }
 
