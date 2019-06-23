@@ -1,3 +1,5 @@
+std = import("std")
+
 selectionSort = fn(array) {
   i = 0
   while (i < len(array)) {
@@ -18,7 +20,7 @@ main = fn() {
   array = [5, 3, 9, 1, 11, 13, 2, 52, 3, 100]
   selectionSort(array)
 
-  puts(array)
+  println("result:", array)
 }
 
 main()

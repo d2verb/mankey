@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/d2verb/monkey/object"
 )
@@ -24,11 +25,24 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"puts": &object.Builtin{
+	"print": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
+			outputs := []string{}
 			for _, arg := range args {
-				fmt.Println(arg.Inspect())
+				outputs = append(outputs, arg.Inspect())
 			}
+			fmt.Print(strings.Join(outputs, ""))
+			return NULL
+		},
+	},
+
+	"println": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			outputs := []string{}
+			for _, arg := range args {
+				outputs = append(outputs, arg.Inspect())
+			}
+			fmt.Println(strings.Join(outputs, " "))
 			return NULL
 		},
 	},
