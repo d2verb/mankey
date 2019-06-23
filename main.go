@@ -12,8 +12,11 @@ import (
 	"github.com/d2verb/monkey/repl"
 )
 
+const VERSION = "0.0.1"
+
 func main() {
 	if len(os.Args) < 2 {
+		fmt.Printf("Monkey %s\n", VERSION)
 		repl.Start(os.Stdin, os.Stdout)
 	} else {
 		content, err := ioutil.ReadFile(os.Args[1])
@@ -36,9 +39,10 @@ func main() {
 		env := object.NewEnvironment()
 		evaluated := evaluator.Eval(program, env)
 
-		if evaluated != nil {
-			fmt.Println(evaluated.Inspect())
+		if evaluated.Type() == object.INTEGER_OBJ {
+			os.Exit(int(evaluated.(*object.Integer).Value))
+		} else {
+			os.Exit(0)
 		}
-
 	}
 }
