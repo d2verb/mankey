@@ -104,6 +104,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	var result object.Object
 
+	result = NULL
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
 
@@ -121,6 +122,7 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
 	var result object.Object
 
+	result = NULL
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
 

@@ -1,5 +1,3 @@
-std = import("std")
-
 selectionSort = fn(array) {
   i = 0
   while (i < len(array)) {
