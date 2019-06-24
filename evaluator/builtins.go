@@ -47,64 +47,6 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"first": &object.Builtin{
-		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1 {
-				return newError("wrong number of arguments. got=%d, want=1",
-					len(args))
-			}
-			if args[0].Type() != object.ARRAY_OBJ {
-				return newError("argument to `first` must be ARRAY, got %s",
-					args[0].Type())
-			}
-			arr := args[0].(*object.Array)
-			if len(arr.Elements) > 0 {
-				return arr.Elements[0]
-			}
-			return NULL
-		},
-	},
-
-	"last": &object.Builtin{
-		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1 {
-				return newError("wrong number of arguments. got=%d, want=1",
-					len(args))
-			}
-			if args[0].Type() != object.ARRAY_OBJ {
-				return newError("argument to `first` must be ARRAY, got %s",
-					args[0].Type())
-			}
-			arr := args[0].(*object.Array)
-			length := len(arr.Elements)
-			if length > 0 {
-				return arr.Elements[length-1]
-			}
-			return NULL
-		},
-	},
-
-	"rest": &object.Builtin{
-		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1 {
-				return newError("wrong number of arguments. got=%d, want=1",
-					len(args))
-			}
-			if args[0].Type() != object.ARRAY_OBJ {
-				return newError("argument to `first` must be ARRAY, got %s",
-					args[0].Type())
-			}
-			arr := args[0].(*object.Array)
-			length := len(arr.Elements)
-			if length > 0 {
-				newElements := make([]object.Object, length-1, length-1)
-				copy(newElements, arr.Elements[1:length])
-				return &object.Array{Elements: newElements}
-			}
-			return NULL
-		},
-	},
-
 	"push": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
@@ -116,13 +58,33 @@ var builtins = map[string]*object.Builtin{
 					args[0].Type())
 			}
 			arr := args[0].(*object.Array)
-			length := len(arr.Elements)
+			arr.Elements = append(arr.Elements, args[1])
+			return NULL
+		},
+	},
 
-			newElements := make([]object.Object, length+1, length+1)
-			copy(newElements, arr.Elements)
-			newElements[length] = args[1]
-
-			return &object.Array{Elements: newElements}
+	"copy": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+			switch t := args[0].Type(); t {
+			case object.ARRAY_OBJ:
+				arr := args[0].(*object.Array)
+				newElements := make([]object.Object, len(arr.Elements))
+				copy(newElements, arr.Elements)
+				return &object.Array{Elements: newElements}
+			case object.HASH_OBJ:
+				arr := args[0].(*object.Hash)
+				newPairs := make(map[object.HashKey]object.HashPair)
+				for key, value := range arr.Pairs {
+					newPairs[key] = value
+				}
+				return &object.Hash{Pairs: newPairs}
+			default:
+				return newError("copy operation not supported: %s", t)
+			}
 		},
 	},
 }

@@ -259,6 +259,14 @@ func TestErrorHandling(t *testing.T) {
 			`a = if (1 < 2) {  }; a[10]`,
 			"index operator not supported: NULL",
 		},
+		{
+			`a = 10; b = copy(a)`,
+			"copy operation not supported: INTEGER",
+		},
+		{
+			`a = fn() { 10 }; b = copy(a)`,
+			"copy operation not supported: FUNCTION",
+		},
 	}
 
 	for _, tt := range tests {
@@ -345,6 +353,11 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
 		{`len([1, 2, 3])`, 3},
 		{`arr = [1, 2]; len(arr);`, 2},
+		{`arr = [1, 2]; push(arr, 2)`, nil},
+		{`arr = [1, 2]; push(arr, 3); len(arr)`, 3},
+		{`arr = [1, 2]; push(arr, 3); len(arr); arr[2]`, 3},
+		{`a = [1, 2, 3]; b = copy(a); b[0] = 20; a[0]`, 1},
+		{`a = {"name": "tom", "age": 20}; b = copy(a); b["age"] = 10; a["age"]`, 20},
 	}
 
 	for _, tt := range tests {
