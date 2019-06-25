@@ -72,6 +72,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.IMPORT, p.parseImportExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
@@ -325,6 +326,28 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	precedence := p.curPrecedence()
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence)
+
+	return expression
+}
+
+func (p *Parser) parseImportExpression() ast.Expression {
+	expression := &ast.ImportExpression{Token: p.curToken}
+
+	// expect '('
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+	p.nextToken()
+
+	if !p.curTokenIs(token.STRING) {
+		return nil
+	}
+	expression.Module = p.curToken.Literal
+
+	// expect ')'
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
 
 	return expression
 }

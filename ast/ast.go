@@ -326,3 +326,18 @@ func (hl *HashLiteral) String() string {
 	out.WriteString("}")
 	return out.String()
 }
+
+type ImportExpression struct {
+	Token  token.Token // 'import' token
+	Module string
+}
+
+func (ie *ImportExpression) expressionNode()      {}
+func (ie *ImportExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *ImportExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("import(")
+	out.WriteString(ie.Module)
+	out.WriteString(")")
+	return out.String()
+}

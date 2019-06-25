@@ -604,6 +604,36 @@ func TestWhileStatement(t *testing.T) {
 	}
 }
 
+func TestImportExpression(t *testing.T) {
+	input := `import("./module/mod1.m")`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain %d statements. got=%d",
+			1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.ImportExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.ImportExpression. got=%T",
+			stmt.Expression)
+	}
+
+	if exp.Module != "./module/mod1.m" {
+		t.Fatalf("module is not ./module/mod1.m. got=%s", exp.Module)
+	}
+}
+
 func TestIfExpression(t *testing.T) {
 	input := `if (x < y) { x }`
 

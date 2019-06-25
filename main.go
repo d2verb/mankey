@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/d2verb/monkey/evaluator"
 	"github.com/d2verb/monkey/lexer"
@@ -36,7 +37,14 @@ func main() {
 			os.Exit(1)
 		}
 
-		env := object.NewEnvironment()
+		abspath, err := filepath.Abs(os.Args[1])
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		curdir := filepath.Dir(abspath)
+
+		env := object.NewEnvironmentWithDir(curdir)
 		evaluated := evaluator.Eval(program, env)
 
 		if evaluated.Type() == object.INTEGER_OBJ {

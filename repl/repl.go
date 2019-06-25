@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/d2verb/monkey/evaluator"
 	"github.com/d2verb/monkey/lexer"
@@ -15,7 +17,13 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvironment()
+	abspath, err := filepath.Abs(".")
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	curdir := filepath.Dir(abspath)
+	env := object.NewEnvironmentWithDir(curdir)
 
 	for {
 		fmt.Printf(PROMPT)

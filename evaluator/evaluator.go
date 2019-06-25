@@ -2,9 +2,14 @@ package evaluator
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"github.com/d2verb/monkey/ast"
+	"github.com/d2verb/monkey/lexer"
 	"github.com/d2verb/monkey/object"
+	"github.com/d2verb/monkey/parser"
 )
 
 var (
@@ -69,6 +74,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+	case *ast.ImportExpression:
+		return evalImportExpression(node, env)
 	case *ast.WhileStatement:
 		return evalWhileStatement(node, env)
 	case *ast.ReturnStatement:
@@ -349,6 +356,47 @@ func evalWhileStatement(we *ast.WhileStatement, env *object.Environment) object.
 	}
 
 	return NULL
+}
+
+func evalImportExpression(ie *ast.ImportExpression, env *object.Environment) object.Object {
+	// Build module path
+	curdir, ok := env.Get("__curdir")
+	if !ok {
+		return newError("identifier not found: %s", "__curdir")
+	}
+	modpath := filepath.Join(curdir.(*object.String).Value, ie.Module)
+	moddir := filepath.Dir(modpath)
+
+	// Read module content
+	content, err := ioutil.ReadFile(modpath)
+	if err != nil {
+		return newError("failed to read module: %s", modpath)
+	}
+
+	// Parse and eval module content
+	l := lexer.New(string(content))
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		for _, msg := range p.Errors() {
+			fmt.Println(msg)
+		}
+		os.Exit(1)
+	}
+
+	// Extract identifiers from module env
+	modEnv := object.NewEnvironmentWithDir(moddir)
+	_ = Eval(program, modEnv)
+
+	pairs := make(map[object.HashKey]object.HashPair)
+	for _, key := range modEnv.Keys() {
+		k := &object.String{Value: key}
+		v, _ := modEnv.Get(key)
+		pairs[k.HashKey()] = object.HashPair{Key: k, Value: v}
+	}
+
+	return &object.Hash{Pairs: pairs}
 }
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
