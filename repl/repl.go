@@ -17,12 +17,11 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	abspath, err := filepath.Abs(".")
+	curdir, err := filepath.Abs(".")
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	curdir := filepath.Dir(abspath)
 	env := object.NewEnvironmentWithDir(curdir)
 
 	for {
