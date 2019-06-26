@@ -77,6 +77,19 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 < 1", false},
 		{"1 > 1", false},
 		{"1 == 1", true},
+		{`"a" == "a"`, true},
+		{`"a" == "b"`, false},
+		{`"a" == "ab"`, false},
+		{`"a" < "b"`, true},
+		{`"b" > "a"`, true},
+		{`"a" < "ab"`, true},
+		{`"aa" < "aaa"`, true},
+		{`"a" > "ab"`, false},
+		{`"aa" > "aaa"`, false},
+		{`"a" < ""`, false},
+		{`"" < "a"`, true},
+		{`"" < ""`, false},
+		{`"" == ""`, true},
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
@@ -541,6 +554,36 @@ func TestHashIndexExpression(t *testing.T) {
 	}
 }
 
+func TestStringIndexExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{
+			`"something"[2]`,
+			"m",
+		},
+		{
+			`"something"[100]`,
+			nil,
+		},
+		{
+			`"something"[-10]`,
+			nil,
+		},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		str, ok := tt.expected.(string)
+		if ok {
+			testStringObject(t, evaluated, str)
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
@@ -587,5 +630,21 @@ func testNullObject(t *testing.T, obj object.Object) bool {
 		t.Errorf("object is not NULL. got=%T (%+v)", obj, obj)
 		return false
 	}
+	return true
+}
+
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	result, ok := obj.(*object.String)
+	if !ok {
+		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%s, want=%s",
+			result.Value, expected)
+		return false
+	}
+
 	return true
 }

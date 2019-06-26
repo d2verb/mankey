@@ -306,15 +306,24 @@ func evalStringInfixExpression(
 	operator string,
 	left, right object.Object,
 ) object.Object {
-	if operator != "+" {
-		return newError("unknown operator: %s %s %s",
-			left.Type(), operator, right.Type())
-	}
-
 	leftVal := left.(*object.String).Value
 	rightVal := right.(*object.String).Value
 
-	return &object.String{Value: leftVal + rightVal}
+	switch operator {
+	case "+":
+		return &object.String{Value: leftVal + rightVal}
+	case "<":
+		return &object.Boolean{Value: leftVal < rightVal}
+	case ">":
+		return &object.Boolean{Value: leftVal > rightVal}
+	case "==":
+		return &object.Boolean{Value: leftVal == rightVal}
+	case "!=":
+		return &object.Boolean{Value: leftVal != rightVal}
+	default:
+		return newError("unknown operator: %s %s %s",
+			left.Type(), operator, right.Type())
+	}
 }
 
 func evalBangOperatorExpression(right object.Object) object.Object {
@@ -463,9 +472,21 @@ func evalIndexExpression(left, index object.Object) object.Object {
 		return evalArrayIndexExpression(left, index)
 	case left.Type() == object.HASH_OBJ:
 		return evalHashIndexExpression(left, index)
+	case left.Type() == object.STRING_OBJ:
+		return evalStringIndexExpression(left, index)
 	default:
 		return newError("index operator not supported: %s", left.Type())
 	}
+}
+
+func evalStringIndexExpression(str, index object.Object) object.Object {
+	stringObject := str.(*object.String)
+	idx := index.(*object.Integer).Value
+	max := int64(len(stringObject.Value) - 1)
+	if idx < 0 || idx > max {
+		return NULL
+	}
+	return &object.String{Value: string(stringObject.Value[idx])}
 }
 
 func evalArrayIndexExpression(array, index object.Object) object.Object {
