@@ -393,6 +393,18 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"add(a * b[2], b[1], 2 * [1, 2][1])",
 			"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
 		},
+		{
+			"x == y && x == z",
+			"((x == y) && (x == z))",
+		},
+		{
+			"x == y || x == z",
+			"((x == y) || (x == z))",
+		},
+		{
+			"x <= a && x == y || x >= z",
+			"(((x <= a) && (x == y)) || (x >= z))",
+		},
 	}
 
 	for _, tt := range tests {

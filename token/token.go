@@ -26,9 +26,13 @@ const (
 
 	LT = "<"
 	GT = ">"
+	LE = "<="
+	GE = ">="
 
 	EQ     = "=="
 	NOT_EQ = "!="
+	AND    = "&&"
+	OR     = "||"
 
 	// Demilitors
 	DOT       = "."

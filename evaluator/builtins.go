@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/d2verb/monkey/object"
 )
@@ -149,6 +150,25 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			return &object.Integer{Value: int64(fd)}
+		},
+	},
+
+	"sleep": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1",
+					len(args))
+			}
+
+			if args[0].Type() != object.INTEGER_OBJ {
+				return newError("1st argument to `sleep` must be INTEGER, got %s",
+					args[0].Type())
+			}
+
+			nsec := args[0].(*object.Integer).Value
+			time.Sleep(time.Duration(nsec) * time.Millisecond)
+
+			return NULL
 		},
 	},
 

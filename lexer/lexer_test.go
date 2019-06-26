@@ -40,6 +40,11 @@ if (5 < 10) {
 
 while (i < 10) {}
 a.b
+
+1 <= 1
+2 >= 2
+true && false
+true || false
 `
 
 	tests := []struct {
@@ -142,6 +147,18 @@ a.b
 		{token.IDENT, "a"},
 		{token.DOT, "."},
 		{token.IDENT, "b"},
+		{token.INT, "1"},
+		{token.LE, "<="},
+		{token.INT, "1"},
+		{token.INT, "2"},
+		{token.GE, ">="},
+		{token.INT, "2"},
+		{token.TRUE, "true"},
+		{token.AND, "&&"},
+		{token.FALSE, "false"},
+		{token.TRUE, "true"},
+		{token.OR, "||"},
+		{token.FALSE, "false"},
 		{token.EOF, ""},
 	}
 

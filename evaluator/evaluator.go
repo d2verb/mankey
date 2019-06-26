@@ -260,10 +260,8 @@ func evalInfixExpression(
 		return evalIntegerInfixExpression(operator, left, right)
 	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
 		return evalStringInfixExpression(operator, left, right)
-	case operator == "==":
-		return nativeBoolToBooleanObject(left == right)
-	case operator == "!=":
-		return nativeBoolToBooleanObject(left != right)
+	case left.Type() == object.BOOLEAN_OBJ && right.Type() == object.BOOLEAN_OBJ:
+		return evalBooleanInfixExpression(operator, left, right)
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s",
 			left.Type(), operator, right.Type())
@@ -293,6 +291,10 @@ func evalIntegerInfixExpression(
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case ">":
 		return nativeBoolToBooleanObject(leftVal > rightVal)
+	case "<=":
+		return nativeBoolToBooleanObject(leftVal <= rightVal)
+	case ">=":
+		return nativeBoolToBooleanObject(leftVal >= rightVal)
 	case "==":
 		return nativeBoolToBooleanObject(leftVal == rightVal)
 	case "!=":
@@ -316,6 +318,10 @@ func evalStringInfixExpression(
 		return &object.Boolean{Value: leftVal < rightVal}
 	case ">":
 		return &object.Boolean{Value: leftVal > rightVal}
+	case "<=":
+		return &object.Boolean{Value: leftVal <= rightVal}
+	case ">=":
+		return &object.Boolean{Value: leftVal >= rightVal}
 	case "==":
 		return &object.Boolean{Value: leftVal == rightVal}
 	case "!=":
@@ -324,6 +330,32 @@ func evalStringInfixExpression(
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
+}
+
+func evalBooleanInfixExpression(
+	operator string,
+	left, right object.Object,
+) object.Object {
+	leftVal := left.(*object.Boolean).Value
+	rightVal := right.(*object.Boolean).Value
+
+	var resVal bool
+
+	switch operator {
+	case "==":
+		resVal = leftVal == rightVal
+	case "!=":
+		resVal = leftVal != rightVal
+	case "&&":
+		resVal = leftVal && rightVal
+	case "||":
+		resVal = leftVal || rightVal
+	default:
+		return newError("unknown operator: %s %s %s",
+			left.Type(), operator, right.Type())
+	}
+
+	return nativeBoolToBooleanObject(resVal)
 }
 
 func evalBangOperatorExpression(right object.Object) object.Object {
