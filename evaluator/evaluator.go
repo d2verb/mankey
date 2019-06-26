@@ -315,17 +315,17 @@ func evalStringInfixExpression(
 	case "+":
 		return &object.String{Value: leftVal + rightVal}
 	case "<":
-		return &object.Boolean{Value: leftVal < rightVal}
+		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case ">":
-		return &object.Boolean{Value: leftVal > rightVal}
+		return nativeBoolToBooleanObject(leftVal > rightVal)
 	case "<=":
-		return &object.Boolean{Value: leftVal <= rightVal}
+		return nativeBoolToBooleanObject(leftVal <= rightVal)
 	case ">=":
-		return &object.Boolean{Value: leftVal >= rightVal}
+		return nativeBoolToBooleanObject(leftVal >= rightVal)
 	case "==":
-		return &object.Boolean{Value: leftVal == rightVal}
+		return nativeBoolToBooleanObject(leftVal == rightVal)
 	case "!=":
-		return &object.Boolean{Value: leftVal != rightVal}
+		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())

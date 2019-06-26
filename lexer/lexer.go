@@ -1,6 +1,10 @@
 package lexer
 
-import "github.com/d2verb/monkey/token"
+import (
+	"strings"
+
+	"github.com/d2verb/monkey/token"
+)
 
 type Lexer struct {
 	input        string
@@ -176,13 +180,27 @@ func (l *Lexer) readNumber() string {
 
 func (l *Lexer) readString() string {
 	position := l.position + 1
+
+	prevCh := byte(0x0)
 	for {
 		l.readChar()
-		if l.ch == '"' || l.ch == 0 {
+		if (prevCh != '\\' && l.ch == '"') || l.ch == 0 {
 			break
 		}
+		prevCh = l.ch
 	}
-	return l.input[position:l.position]
+	s := l.input[position:l.position]
+
+	s = strings.Replace(s, "\\a", "\a", -1)
+	s = strings.Replace(s, "\\b", "\b", -1)
+	s = strings.Replace(s, "\\n", "\n", -1)
+	s = strings.Replace(s, "\\r", "\r", -1)
+	s = strings.Replace(s, "\\t", "\t", -1)
+	s = strings.Replace(s, "\\v", "\v", -1)
+	s = strings.Replace(s, "\\\"", "\"", -1)
+	s = strings.Replace(s, "\\\\", "\\", -1)
+
+	return s
 }
 
 func isLetter(ch byte) bool {
