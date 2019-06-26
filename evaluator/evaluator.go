@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
+	"strings"
 
 	"github.com/d2verb/monkey/ast"
 	"github.com/d2verb/monkey/lexer"
@@ -364,7 +366,16 @@ func evalImportExpression(ie *ast.ImportExpression, env *object.Environment) obj
 	if !ok {
 		return newError("identifier not found: %s", "__curdir")
 	}
-	modpath := filepath.Join(curdir.(*object.String).Value, ie.Module)
+
+	// Expand `~` if module name has prefix '~/'
+	var modpath string
+	if strings.HasPrefix(ie.Module, "~/") {
+		usr, _ := user.Current()
+		modpath = filepath.Join(usr.HomeDir, ie.Module[2:])
+	} else {
+		modpath = filepath.Join(curdir.(*object.String).Value, ie.Module)
+	}
+
 	moddir := filepath.Dir(modpath)
 
 	// Read module content
