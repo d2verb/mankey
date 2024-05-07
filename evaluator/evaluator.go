@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/d2verb/monkey/ast"
-	"github.com/d2verb/monkey/lexer"
-	"github.com/d2verb/monkey/object"
-	"github.com/d2verb/monkey/parser"
+	"github.com/d2verb/mankey/ast"
+	"github.com/d2verb/mankey/lexer"
+	"github.com/d2verb/mankey/object"
+	"github.com/d2verb/mankey/parser"
 )
 
 var (

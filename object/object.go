@@ -6,7 +6,7 @@ import (
 	"hash/fnv"
 	"strings"
 
-	"github.com/d2verb/monkey/ast"
+	"github.com/d2verb/mankey/ast"
 )
 
 type BuiltinFunction func(args ...Object) Object
@@ -26,7 +26,7 @@ const (
 	HASH_OBJ         = "HASH"
 )
 
-// Interface for all objects in Monkey lang
+// Interface for all objects in Mankey lang
 type Object interface {
 	Type() ObjectType
 	Inspect() string

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/d2verb/monkey/ast"
-	"github.com/d2verb/monkey/lexer"
-	"github.com/d2verb/monkey/token"
+	"github.com/d2verb/mankey/ast"
+	"github.com/d2verb/mankey/lexer"
+	"github.com/d2verb/mankey/token"
 )
 
 const (

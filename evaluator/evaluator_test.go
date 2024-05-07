@@ -3,9 +3,9 @@ package evaluator
 import (
 	"testing"
 
-	"github.com/d2verb/monkey/lexer"
-	"github.com/d2verb/monkey/object"
-	"github.com/d2verb/monkey/parser"
+	"github.com/d2verb/mankey/lexer"
+	"github.com/d2verb/mankey/object"
+	"github.com/d2verb/mankey/parser"
 )
 
 func TestAssignExpression(t *testing.T) {
@@ -284,7 +284,7 @@ func TestErrorHandling(t *testing.T) {
 			"unknown operator: STRING - STRING",
 		},
 		{
-			`{"name": "Monkey"}[fn(x) { x }];`,
+			`{"name": "Mankey"}[fn(x) { x }];`,
 			"unusable as hash key: FUNCTION",
 		},
 		{

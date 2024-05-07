@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/d2verb/monkey/ast"
-	"github.com/d2verb/monkey/lexer"
+	"github.com/d2verb/mankey/ast"
+	"github.com/d2verb/mankey/lexer"
 )
 
 func TestAssignExpressions(t *testing.T) {

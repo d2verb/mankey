@@ -1,8 +1,8 @@
 all:
-	go build -o monkey main.go
+	go build -o mankey main.go
 
 install:
-	go install github.com/d2verb/monkey
+	go install github.com/d2verb/mankey
 
 test:
 	go test ./lexer
@@ -11,4 +11,4 @@ test:
 	go test ./evaluator
 
 clean:
-	rm -f monkey
+	rm -f mankey

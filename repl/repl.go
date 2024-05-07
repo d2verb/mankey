@@ -7,10 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/d2verb/monkey/evaluator"
-	"github.com/d2verb/monkey/lexer"
-	"github.com/d2verb/monkey/object"
-	"github.com/d2verb/monkey/parser"
+	"github.com/d2verb/mankey/evaluator"
+	"github.com/d2verb/mankey/lexer"
+	"github.com/d2verb/mankey/object"
+	"github.com/d2verb/mankey/parser"
 )
 
 const PROMPT = ">> "

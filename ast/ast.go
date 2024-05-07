@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/d2verb/monkey/token"
+	"github.com/d2verb/mankey/token"
 )
 
 // Node is base of AST

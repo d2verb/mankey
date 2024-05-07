@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/d2verb/monkey/object"
+	"github.com/d2verb/mankey/object"
 )
 
 func parseMode(mode string) (int, error) {

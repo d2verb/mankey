@@ -6,18 +6,18 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/d2verb/monkey/evaluator"
-	"github.com/d2verb/monkey/lexer"
-	"github.com/d2verb/monkey/object"
-	"github.com/d2verb/monkey/parser"
-	"github.com/d2verb/monkey/repl"
+	"github.com/d2verb/mankey/evaluator"
+	"github.com/d2verb/mankey/lexer"
+	"github.com/d2verb/mankey/object"
+	"github.com/d2verb/mankey/parser"
+	"github.com/d2verb/mankey/repl"
 )
 
 const VERSION = "0.0.1"
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Printf("Monkey %s\n", VERSION)
+		fmt.Printf("Mankey %s\n", VERSION)
 		repl.Start(os.Stdin, os.Stdout)
 	} else {
 		content, err := ioutil.ReadFile(os.Args[1])
