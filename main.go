@@ -18,7 +18,7 @@ const VERSION = "0.0.1"
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Printf("Mankey %s\n", VERSION)
-		repl.Start(os.Stdin, os.Stdout)
+		repl.Start()
 	} else {
 		content, err := ioutil.ReadFile(os.Args[1])
 		if err != nil {
