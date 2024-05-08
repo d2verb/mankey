@@ -48,6 +48,9 @@ func main() {
 
 		if evaluated.Type() == object.INTEGER_OBJ {
 			os.Exit(int(evaluated.(*object.Integer).Value))
+		} else if evaluated.Type() == object.ERROR_OBJ {
+			fmt.Println(evaluated.Inspect())
+			os.Exit(1)
 		} else {
 			os.Exit(0)
 		}
