@@ -14,19 +14,21 @@ import (
 
 const PROMPT = ">> "
 
-func Start() {
-	p := prompt.New(executor, completer, prompt.OptionPrefix(PROMPT))
-	p.Run()
-}
+var env *object.Environment
 
-func executor(in string) {
+func Start() {
 	curdir, err := filepath.Abs(".")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	env := object.NewEnvironmentWithDir(curdir)
+	env = object.NewEnvironmentWithDir(curdir)
 
+	p := prompt.New(executor, completer, prompt.OptionPrefix(PROMPT))
+	p.Run()
+}
+
+func executor(in string) {
 	l := lexer.New(in)
 	p := parser.New(l)
 
