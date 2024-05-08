@@ -39,7 +39,7 @@ func parseMode(mode string) (int, error) {
 }
 
 var builtins = map[string]*object.Builtin{
-	"len": &object.Builtin{
+	"len": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
@@ -56,7 +56,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"print": &object.Builtin{
+	"print": {
 		Fn: func(args ...object.Object) object.Object {
 			outputs := []string{}
 			for _, arg := range args {
@@ -67,7 +67,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"println": &object.Builtin{
+	"println": {
 		Fn: func(args ...object.Object) object.Object {
 			outputs := []string{}
 			for _, arg := range args {
@@ -78,7 +78,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"push": &object.Builtin{
+	"push": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
 				return newError("wrong number of arguments. got=%d, want=2",
@@ -94,7 +94,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"copy": &object.Builtin{
+	"copy": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1",
@@ -119,7 +119,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"open": &object.Builtin{
+	"open": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
 				return newError("wrong number of arguments. got=%d, want=2",
@@ -153,7 +153,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"sleep": &object.Builtin{
+	"sleep": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1",
@@ -172,7 +172,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"close": &object.Builtin{
+	"close": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1",
@@ -194,7 +194,7 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"read": &object.Builtin{
+	"read": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
 				return newError("wrong number of arguments. got=%d, want=2",
