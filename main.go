@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -20,7 +19,7 @@ func main() {
 		fmt.Printf("Mankey %s\n", VERSION)
 		repl.Start()
 	} else {
-		content, err := ioutil.ReadFile(os.Args[1])
+		content, err := os.ReadFile(os.Args[1])
 		if err != nil {
 			fmt.Println("Error: ", err)
 			os.Exit(1)
