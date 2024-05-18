@@ -18,6 +18,7 @@ type Compiler struct {
 	constants           []object.Object
 	lastInstruction     EmittedInstruction
 	previousInstruction EmittedInstruction
+	symbolTable         *SymbolTable
 }
 
 func New() *Compiler {
@@ -26,6 +27,7 @@ func New() *Compiler {
 		constants:           []object.Object{},
 		lastInstruction:     EmittedInstruction{},
 		previousInstruction: EmittedInstruction{},
+		symbolTable:         NewSymbolTable(),
 	}
 }
 
@@ -43,7 +45,10 @@ func (c *Compiler) Compile(node ast.Node) error {
 		if err != nil {
 			return err
 		}
-		c.emit(code.OpPop)
+
+		if !c.lastinstructionIsSetGlobal() {
+			c.emit(code.OpPop)
+		}
 	case *ast.PrefixExpression:
 		err := c.Compile(node.Right)
 		if err != nil {
@@ -70,6 +75,21 @@ func (c *Compiler) Compile(node ast.Node) error {
 				return err
 			}
 			c.emit(code.OpGreaterThan)
+			return nil
+		}
+
+		if node.Operator == "=" {
+			err := c.Compile(node.Right)
+			if err != nil {
+				return err
+			}
+			ident, ok := node.Left.(*ast.Identifier)
+			if !ok {
+				return fmt.Errorf("left hand side of assignment must be an identifier, got=%T", node.Left)
+			}
+			symbol := c.symbolTable.Define(ident.Value)
+			c.emit(code.OpSetGlobal, symbol.Index)
+
 			return nil
 		}
 
@@ -153,12 +173,22 @@ func (c *Compiler) Compile(node ast.Node) error {
 				return err
 			}
 		}
+	case *ast.Identifier:
+		symbol, ok := c.symbolTable.Resolve(node.Value)
+		if !ok {
+			return fmt.Errorf("undefined variable %s", node.Value)
+		}
+		c.emit(code.OpGetGlobal, symbol.Index)
 	}
 	return nil
 }
 
 func (c *Compiler) lastinstructionIsPop() bool {
 	return c.lastInstruction.Opcode == code.OpPop
+}
+
+func (c *Compiler) lastinstructionIsSetGlobal() bool {
+	return c.lastInstruction.Opcode == code.OpSetGlobal
 }
 
 func (c *Compiler) removeLastPop() {

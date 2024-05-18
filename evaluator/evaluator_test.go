@@ -13,14 +13,14 @@ func TestAssignExpression(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{"x = 10", nil},
+		{"x = 10", 10},
 		{"x = 10; x", 10},
-		{"x = 10; x = 20", nil},
+		{"x = 10; x = 20", 20},
 		{"x = 10; x = 20; x", 20},
 		{"x = [1, 2, 3]; x[1]", 2},
 		{"x = [1, 2, 3]; x[0] = 20; x[0]", 20},
 		{`x = {"age": 21}; x["age"]`, 21},
-		{`x = {"age": 21}; x["age"] = 20`, nil},
+		{`x = {"age": 21}; x["age"] = 20`, 20},
 		{`x = {"age": 21}; x["age"] = 20; x["age"]`, 20},
 		{`x = {"age": 21}; x["age"] = [1, 2, 3]; x["age"][0]`, 1},
 		{`x = {"age": 21}; x.age = [1, 2, 3]; x.age[0]`, 1},

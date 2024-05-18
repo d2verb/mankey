@@ -165,3 +165,13 @@ func TestConditionals(t *testing.T) {
 
 	runVmTests(t, tests)
 }
+
+func TestGlobalAssignmentStatement(t *testing.T) {
+	tests := []vmTestcase{
+		{"one = 1;", 1},
+		{"one = 1; one", 1},
+		{"one = 1; two = one + one; one + two", 3},
+	}
+
+	runVmTests(t, tests)
+}

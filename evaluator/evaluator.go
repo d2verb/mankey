@@ -176,7 +176,7 @@ func evalAssignExpression(
 			return right
 		}
 		env.Set(leftNode.Value, right)
-		return NULL
+		return right
 	case *ast.IndexExpression:
 		return evalAssignIndexExpression(leftNode.Left, leftNode.Index, rightNode, env)
 	default:
@@ -228,7 +228,7 @@ func evalAssignArrayExpression(
 		return right
 	}
 	array.Elements[idxVal] = right
-	return NULL
+	return right
 }
 
 func evalAssignHashExpression(
@@ -248,7 +248,7 @@ func evalAssignHashExpression(
 
 	hashed := key.HashKey()
 	hashObj.Pairs[hashed] = object.HashPair{Key: index, Value: right}
-	return NULL
+	return right
 }
 
 func evalInfixExpression(
