@@ -11,7 +11,10 @@ require (
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-tty v0.0.3 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
+	github.com/segmentio/asm v1.1.3 // indirect
+	github.com/segmentio/encoding v0.3.4 // indirect
 	github.com/spf13/cobra v1.8.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/sys v0.0.0-20200918174421-af09f7315aff // indirect
+	go.lsp.dev/jsonrpc2 v0.10.0
+	golang.org/x/sys v0.0.0-20211110154304-99a53858aa08 // indirect
 )

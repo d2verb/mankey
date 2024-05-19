@@ -8,6 +8,7 @@ import (
 
 	"github.com/d2verb/mankey/evaluator"
 	"github.com/d2verb/mankey/lexer"
+	"github.com/d2verb/mankey/lsp"
 	"github.com/d2verb/mankey/object"
 	"github.com/d2verb/mankey/parser"
 	"github.com/d2verb/mankey/repl"
@@ -39,7 +40,16 @@ func main() {
 		},
 	}
 
+	var lspCmd = &cobra.Command{
+		Use:   "lsp",
+		Short: "Start Language Server",
+		Run: func(cmd *cobra.Command, args []string) {
+			runLsp()
+		},
+	}
+
 	rootCmd.AddCommand(runCodeCmd)
+	rootCmd.AddCommand(lspCmd)
 	rootCmd.Execute()
 }
 
@@ -84,4 +94,8 @@ func runCode(filename string) {
 	} else {
 		os.Exit(0)
 	}
+}
+
+func runLsp() {
+	lsp.Serve()
 }
